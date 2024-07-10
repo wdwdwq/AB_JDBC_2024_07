@@ -1,20 +1,19 @@
 package org.example.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Article {
     private int id;
     private String regDate;
     private String updateDate;
     private String title;
     private String body;
+
+
 
     @Override
     public String toString() {
@@ -27,3 +26,5 @@ public class Article {
                 '}';
     }
 }
+
+
