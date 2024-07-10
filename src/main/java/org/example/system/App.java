@@ -20,8 +20,6 @@ public class App {
     public void run() {
         System.out.println("==Article Start==");
 
-        int lastId = 0;
-
         List<Article> articles = new ArrayList<>();
 
         while (true) {
@@ -38,19 +36,13 @@ public class App {
             }
             if (cmd.equals("article write")) {
                 System.out.println("==글쓰기==");
-                int id = lastId + 1;
+                String regDate = Util.getNow();
                 System.out.print("title : ");
                 String title = sc.nextLine();
                 System.out.print("body : ");
                 String body = sc.nextLine();
 
-                Article article = new Article(id, title, body);
-
-                articles.add(article);
-
-                System.out.println(article);
-                lastId++;
-                System.out.println(id + "번 글이 작성 되었습니다");
+                System.out.println("게시글이 작성 되었습니다");
 
                 Connection conn = null;
                 PreparedStatement pstmt = null;
