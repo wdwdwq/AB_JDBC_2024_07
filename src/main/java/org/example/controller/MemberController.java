@@ -16,7 +16,7 @@ public class MemberController {
     public MemberController(Scanner sc, Connection conn) {
         this.sc = sc;
         this.conn = conn;
-        this.memberService = new MemberService();
+        this.memberService = new MemberService(conn);
     }
 
     public void doJoin() {
@@ -28,54 +28,54 @@ public class MemberController {
         System.out.println("==회원가입==");
         while (true) {
             System.out.print("로그인 아이디 : ");
-            loginId = sc.nextLine();
+            loginId = sc.nextLine().trim();
 
             if (loginId.length() == 0 || loginId.contains(" ")) {
                 System.out.println("아이디 똑바로 써");
                 continue;
             }
 
+            boolean isLoindIdDup = memberService.isLoginIdDup(conn, loginId);
 
-            boolean isLoginIdDup = memberService.isLoginIdDup(conn, loginId);
-
-            if (isLoginIdDup) {
-                System.out.println(loginId + "은(는) 이미 사용중");
+            if (isLoindIdDup) {
+                System.out.println(loginId + "는(은) 이미 사용중");
                 continue;
             }
             break;
         }
         while (true) {
             System.out.print("비밀번호 : ");
-            loginPw = sc.nextLine();
+            loginPw = sc.nextLine().trim();
 
             if (loginPw.length() == 0 || loginPw.contains(" ")) {
-                System.out.println("아이디 똑바로 써");
+                System.out.println("비번 똑바로 입력해");
                 continue;
             }
 
-            boolean loginPwdChk = true;
+            boolean loginPwCheck = true;
 
             while (true) {
                 System.out.print("비밀번호 확인 : ");
                 loginPwConfirm = sc.nextLine().trim();
 
                 if (loginPwConfirm.length() == 0 || loginPwConfirm.contains(" ")) {
-                    System.out.println("비번 똑바로 입력해");
+                    System.out.println("비번 확인 똑바로 써");
                     continue;
                 }
                 if (loginPw.equals(loginPwConfirm) == false) {
                     System.out.println("일치하지 않아");
-                    loginPwdChk = false;
+                    loginPwCheck = false;
                 }
                 break;
             }
-            if (loginPwdChk) {
+            if (loginPwCheck) {
                 break;
             }
         }
+
         while (true) {
             System.out.print("이름 : ");
-            name = sc.nextLine().trim();
+            name = sc.nextLine();
 
             if (name.length() == 0 || name.contains(" ")) {
                 System.out.println("이름 똑바로 써");
@@ -83,16 +83,9 @@ public class MemberController {
             }
             break;
         }
-        SecSql sql = new SecSql();
 
-        sql.append("INSERT INTO `member`");
-        sql.append("SET regDate = NOW(),");
-        sql.append("updateDate = NOW(),");
-        sql.append("loginId = ?,", loginId);
-        sql.append("loginPw= ?,", loginPw);
-        sql.append("name = ?;", name);
 
-        int id = DBUtil.insert(conn, sql);
+        int id = memberService.doJoin(loginId, loginPw, name);
 
         System.out.println(id + "번 회원이 생성되었습니다");
     }
