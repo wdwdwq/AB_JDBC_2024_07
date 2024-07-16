@@ -2,6 +2,8 @@ package org.example.system;
 
 import org.example.DB.DBUtil;
 import org.example.Sql.SecSql;
+import org.example.controller.ArticleController;
+import org.example.controller.MemberController;
 import org.example.entity.Article;
 
 import java.sql.Connection;
@@ -34,7 +36,7 @@ public class App {
             try {
                 conn = DriverManager.getConnection(url, "root", "");
 
-                int actionResult = doAction(conn, sc, cmd);
+                int actionResult = action(conn, sc, cmd);
 
 
                 if (actionResult == 1) {
@@ -57,13 +59,18 @@ public class App {
     }
 
 
-    private int doAction(Connection conn, Scanner sc, String cmd) {
+    private int action(Connection conn, Scanner sc, String cmd) {
 
         if (cmd.equals("exit")) {
             return -1;
         }
 
-        if (cmd.equals("article write")) {
+        MemberController memberController = new MemberController(sc, conn);
+        ArticleController articleController = new ArticleController();
+
+        if (cmd.equals("member join")) {
+            memberController.doJoin();
+        } else if (cmd.equals("article write")) {
             System.out.println("==글쓰기==");
             System.out.print("제목 : ");
             String title = sc.nextLine();
@@ -108,7 +115,7 @@ public class App {
             for (Article article : articles) {
                 System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
             }
-    } else if (cmd.startsWith("article modify")) {
+        } else if (cmd.startsWith("article modify")) {
 
             int id = 0;
 
@@ -124,9 +131,9 @@ public class App {
             sql.append("FROM article");
             sql.append("WHERE id = ?", id);
 
-            Map<String,Object> articleMap = DBUtil.selectRow(conn,sql);
+            Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
 
-            if(articleMap.isEmpty()){
+            if (articleMap.isEmpty()) {
                 System.out.println(id + "번 글은 없어");
                 return 0;
             }
@@ -151,7 +158,7 @@ public class App {
             DBUtil.update(conn, sql);
 
             System.out.println(id + "번 글이 수정되었습니다.");
-        }else if(cmd.startsWith("article detail")) {
+        } else if (cmd.startsWith("article detail")) {
             int id = 0;
 
             try {
@@ -168,9 +175,9 @@ public class App {
             sql.append("FROM article");
             sql.append("WHERE id = ?", id);
 
-            Map<String,Object> articleMap = DBUtil.selectRow(conn,sql);
+            Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
 
-            if(articleMap.isEmpty()){
+            if (articleMap.isEmpty()) {
                 System.out.println(id + "번 글은 없어");
                 return 0;
             }
@@ -182,7 +189,7 @@ public class App {
             System.out.println("수정날짜 : " + article.getUpdateDate());
             System.out.println("제목 : " + article.getTitle());
             System.out.println("내용 : " + article.getBody());
-        }else if(cmd.startsWith("article delete")) {
+        } else if (cmd.startsWith("article delete")) {
 
             int id = 0;
 
@@ -198,9 +205,9 @@ public class App {
             sql.append("FROM article");
             sql.append("WHERE id = ?", id);
 
-            Map<String,Object> articleMap = DBUtil.selectRow(conn,sql);
+            Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
 
-            if(articleMap.isEmpty()){
+            if (articleMap.isEmpty()) {
                 System.out.println(id + "번 글은 없어");
                 return 0;
             }
@@ -211,7 +218,7 @@ public class App {
             sql.append("DELETE FROM article");
             sql.append("WHERE id = ?", id);
 
-            DBUtil.update(conn,sql);
+            DBUtil.update(conn, sql);
 
             System.out.println(id + "번 글이 삭제되었습니다");
         }
