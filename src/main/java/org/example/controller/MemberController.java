@@ -1,21 +1,15 @@
 package org.example.controller;
 
+import org.example.container.Container;
 import org.example.dto.Member;
 import org.example.service.MemberService;
 
-import java.sql.Connection;
-import java.util.Scanner;
-
 public class MemberController {
-    private Connection conn;
-    private Scanner sc;
 
     private MemberService memberService;
 
-    public MemberController(Scanner sc, Connection conn) {
-        this.sc = sc;
-        this.conn = conn;
-        this.memberService = new MemberService(conn);
+    public MemberController() {
+        this.memberService = Container.memberService;
     }
 
     public void doJoin() {
@@ -27,14 +21,14 @@ public class MemberController {
         System.out.println("==회원가입==");
         while (true) {
             System.out.print("로그인 아이디 : ");
-            loginId = sc.nextLine().trim();
+            loginId = Container.sc.nextLine().trim();
 
             if (loginId.length() == 0 || loginId.contains(" ")) {
                 System.out.println("아이디 똑바로 써");
                 continue;
             }
 
-            boolean isLoindIdDup = memberService.isLoginIdDup(conn, loginId);
+            boolean isLoindIdDup = memberService.isLoginIdDup(loginId);
 
             if (isLoindIdDup) {
                 System.out.println(loginId + "는(은) 이미 사용중");
@@ -44,7 +38,7 @@ public class MemberController {
         }
         while (true) {
             System.out.print("비밀번호 : ");
-            loginPw = sc.nextLine().trim();
+            loginPw = Container.sc.nextLine().trim();
 
             if (loginPw.length() == 0 || loginPw.contains(" ")) {
                 System.out.println("비번 똑바로 입력해");
@@ -55,7 +49,7 @@ public class MemberController {
 
             while (true) {
                 System.out.print("비밀번호 확인 : ");
-                loginPwConfirm = sc.nextLine().trim();
+                loginPwConfirm = Container.sc.nextLine().trim();
 
                 if (loginPwConfirm.length() == 0 || loginPwConfirm.contains(" ")) {
                     System.out.println("비번 확인 똑바로 써");
@@ -74,7 +68,7 @@ public class MemberController {
 
         while (true) {
             System.out.print("이름 : ");
-            name = sc.nextLine();
+            name = Container.sc.nextLine().trim();
 
             if (name.length() == 0 || name.contains(" ")) {
                 System.out.println("이름 똑바로 써");
@@ -96,14 +90,14 @@ public class MemberController {
         System.out.println("==로그인==");
         while (true) {
             System.out.print("로그인 아이디 : ");
-            loginId = sc.nextLine().trim();
+            loginId = Container.sc.nextLine().trim();
 
             if (loginId.length() == 0 || loginId.contains(" ")) {
                 System.out.println("아이디 똑바로 써");
                 continue;
             }
 
-            boolean isLoindIdDup = memberService.isLoginIdDup(conn, loginId);
+            boolean isLoindIdDup = memberService.isLoginIdDup(loginId);
 
             if (isLoindIdDup == false) {
                 System.out.println(loginId + "는(은) 없어");
@@ -125,7 +119,7 @@ public class MemberController {
             }
 
             System.out.print("비밀번호 : ");
-            loginPw = sc.nextLine().trim();
+            loginPw = Container.sc.nextLine().trim();
 
             if (loginPw.length() == 0 || loginPw.contains(" ")) {
                 tryCount++;
@@ -138,8 +132,26 @@ public class MemberController {
                 continue;
             }
 
+            Container.session.loginedMember = member;
+            Container.session.loginedMemberId = member.getId();
+
             System.out.println(member.getName() + "님 환영합니다");
             break;
         }
+    }
+
+    public void showProfile() {
+        if(Container.session.loginedMemberId == -1){
+            System.out.println("로그인 상태 아님");
+            return;
+        }else{
+            System.out.println(Container.session.loginedMember);
+        }
+    }
+
+    public void logout() {
+        System.out.println("==로그아웃==");
+        Container.session.loginedMemberId = -1;
+        Container.session.loginedMember = null;
     }
 }
