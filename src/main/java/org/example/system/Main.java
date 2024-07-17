@@ -5,12 +5,11 @@ import org.example.Sql.SQLErrorException;
 
 public class Main {
     public static void main(String[] args) {
-        try{
+        try {
             new App().run();
-        }catch (SQLErrorException e){
-            System.out.println("e.getOrigin : " + e.getOrigin());
+        } catch (SQLErrorException e) {
+            System.err.println("e.getOrigin : " + e.getOrigin());
             e.getOrigin().printStackTrace();
         }
-
     }
 }

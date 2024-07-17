@@ -13,6 +13,10 @@ public class MemberController {
     }
 
     public void doJoin() {
+        if (Container.session.isLogined()) {
+            System.out.println("로그아웃 후 이용하세요");
+            return;
+        }
         String loginId = null;
         String loginPw = null;
         String loginPwConfirm = null;
@@ -68,7 +72,7 @@ public class MemberController {
 
         while (true) {
             System.out.print("이름 : ");
-            name = Container.sc.nextLine().trim();
+            name = Container.sc.nextLine();
 
             if (name.length() == 0 || name.contains(" ")) {
                 System.out.println("이름 똑바로 써");
@@ -77,13 +81,19 @@ public class MemberController {
             break;
         }
 
-
         int id = memberService.doJoin(loginId, loginPw, name);
 
         System.out.println(id + "번 회원이 생성되었습니다");
+
+
     }
 
+
     public void login() {
+        if (Container.session.isLogined()) {
+            System.out.println("로그아웃 후 이용하세요");
+            return;
+        }
         String loginId = null;
         String loginPw = null;
 
@@ -132,8 +142,7 @@ public class MemberController {
                 continue;
             }
 
-            Container.session.loginedMember = member;
-            Container.session.loginedMemberId = member.getId();
+            Container.session.login(member);
 
             System.out.println(member.getName() + "님 환영합니다");
             break;
@@ -141,17 +150,21 @@ public class MemberController {
     }
 
     public void showProfile() {
-        if(Container.session.loginedMemberId == -1){
-            System.out.println("로그인 상태 아님");
+        if (Container.session.isLogined() == false) {
+            System.out.println("로그인 후 이용하세요");
             return;
-        }else{
+        } else {
             System.out.println(Container.session.loginedMember);
         }
+
     }
 
     public void logout() {
+        if (Container.session.isLogined() == false) {
+            System.out.println("로그인 후 이용하세요");
+            return;
+        }
         System.out.println("==로그아웃==");
-        Container.session.loginedMemberId = -1;
-        Container.session.loginedMember = null;
+        Container.session.logout();
     }
 }
