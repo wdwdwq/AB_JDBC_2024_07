@@ -34,6 +34,7 @@ public class Member {
                 ", updateDate='" + updateDate + '\'' +
                 ", loginId='" + loginId + '\'' +
                 ", loginPw='" + loginPw + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 
